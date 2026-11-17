@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Roger Federer Flashcards: Career Transition Edition</title>
+  <style>
+    :root {
+      --primary: #00693e; /* Dartmouth Green */
+      --primary-dark: #004d2d;
+      --accent: #e8f5e9;
+      --bg: #f4f7f6;
+      --surface: #ffffff;
+      --text-main: #1a2421;
+      --text-muted: #52635d;
+      --border: #dce5e1;
+      --shadow: 0 10px 25px -5px rgba(0, 60, 35, 0.08), 0 8px 10px -6px rgba(0, 60, 35, 0.04);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #ffffff;
+      padding: 2.5rem 1.5rem 2rem;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    header .badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.16);
+      padding: 0.3rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    header h1 {
+      font-size: clamp(1.6rem, 3.5vw, 2.35rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      max-width: 620px;
+      margin: 0 auto;
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    .controls-bar {
+      max-width: 1100px;
+      width: 100%;
+      margin: 1.5rem auto 0;
+      padding: 0 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .mode-toggle {
+      display: inline-flex;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.25rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    }
+
+    .mode-btn {
+      border: none;
+      background: transparent;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .mode-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .hint-text {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    main {
+      max-width: 1100px;
+      width: 100%;
+      margin: 1.5rem auto 3rem;
+      padding: 0 1.5rem;
+      flex: 1;
+    }
+
+    /* Interactive Single-Card Study View */
+    .study-container {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      max-width: 680px;
+      margin: 1rem auto;
+    }
+
+    .study-container.active {
+      display: flex;
+    }
+
+    .progress-header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 6px;
+      background: var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 1.75rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--primary);
+      transition: width 0.3s ease;
+    }
+
+    .flip-scene {
+      width: 100%;
+      height: 320px;
+      perspective: 1200px;
+      cursor: pointer;
+    }
+
+    .flip-card {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+
+    .flip-card.is-flipped {
+      transform: rotateY(180deg);
+    }
+
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: 18px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 2.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .card-front {
+      border-top: 6px solid var(--primary);
+    }
+
+    .card-chapter-num {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--primary);
+      background: var(--accent);
+      padding: 0.35rem 0.9rem;
+      border-radius: 999px;
+      margin-bottom: 1.25rem;
+    }
+
+    .card-front h2 {
+      font-size: clamp(1.5rem, 3vw, 2.1rem);
+      color: var(--text-main);
+      margin-bottom: 1rem;
+    }
+
+    .tap-prompt {
+      position: absolute;
+      bottom: 1.25rem;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .card-back {
+      transform: rotateY(180deg);
+      background: linear-gradient(180deg, #ffffff 0%, #f9fcfa 100%);
+      border-top: 6px solid #1b4332;
+    }
+
+    .card-back .takeaway-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--primary);
+      margin-bottom: 0.9rem;
+    }
+
+    .card-back p {
+      font-size: clamp(1.05rem, 2.2vw, 1.25rem);
+      color: var(--text-main);
+      max-width: 540px;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.75rem;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .nav-btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-main);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-width: 130px;
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .nav-btn.primary {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    .nav-btn.primary:hover:not(:disabled) {
+      background: var(--primary-dark);
+      color: #ffffff;
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    /* All Cards Grid View */
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .grid-container.hidden {
+      display: none;
+    }
+
+    .grid-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border-top: 4px solid var(--primary);
+    }
+
+    .grid-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+    }
+
+    .grid-card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .grid-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .grid-card h3 {
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .grid-card .key-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--primary);
+      margin-bottom: 0.35rem;
+    }
+
+    .grid-card p {
+      font-size: 0.96rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    @media (max-width: 600px) {
+      .flip-scene {
+        height: 360px;
+      }
+      .card-face {
+        padding: 1.5rem;
+      }
+      .controls-bar {
+        justify-content: center;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="badge">Dartmouth Commencement Lessons</div>
+    <h1>Roger Federer Flashcards: Career Transition Edition</h1>
+    <p>Key mindset takeaways from Roger Federer’s commencement speech to inspire and energize learners embarking on a career pivot.</p>
+  </header>
+
+  <div class="controls-bar">
+    <div class="mode-toggle" role="tablist" aria-label="View Mode">
+      <button class="mode-btn active" id="btnStudy" onclick="setMode('study')">Interactive Flashcards</button>
+      <button class="mode-btn" id="btnGrid" onclick="setMode('grid')">All 8 Takeaways (Grid)</button>
+    </div>
+    <div class="hint-text" id="hintText">Click or press Space to flip card &bull; Arrow keys to navigate</div>
+  </div>
+
+  <main>
+    <!-- Interactive Study View -->
+    <section class="study-container active" id="studyView" aria-live="polite">
+      <div class="progress-header">
+        <span id="cardCounter">Card 1 of 8</span>
+        <span id="cardStatus">Chapter Front</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill" style="width: 12.5%;"></div>
+      </div>
+
+      <div class="flip-scene" onclick="flipCard()">
+        <div class="flip-card" id="flashcard">
+          <div class="card-face card-front">
+            <span class="card-chapter-num" id="frontChapterNum">Chapter 1</span>
+            <h2 id="frontTitle">A new beginning</h2>
+            <div class="tap-prompt">&#8635; Click card to reveal key takeaway</div>
+          </div>
+          <div class="card-face card-back">
+            <div class="takeaway-label">Key Takeaway</div>
+            <p id="backTakeaway">Leaving a familiar path and stepping into an unfamiliar field is normal and wonderfully exciting. Embrace the uncertainty of starting over rather than fearing not having everything figured out yet.</p>
+            <div class="tap-prompt">&#8635; Click card to see chapter title</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-buttons">
+        <button class="nav-btn" id="prevBtn" onclick="prevCard()" disabled>&larr; Previous</button>
+        <button class="nav-btn primary" onclick="flipCard()">Flip Card</button>
+        <button class="nav-btn" id="nextBtn" onclick="nextCard()">Next &rarr;</button>
+      </div>
+    </section>
+
+    <!-- Grid View -->
+    <section class="grid-container hidden" id="gridView"></section>
+  </main>
+
+  <footer>
+    Inspired by Roger Federer’s 2024 Dartmouth Commencement Address &bull; Career Transition Learning Series
+  </footer>
+
+  <script>
+    const flashcards = [
+      {
+        number: 1,
+        title: "A new beginning",
+        takeaway: "Leaving a familiar path and stepping into an unfamiliar field is normal and wonderfully exciting. Embrace the uncertainty of starting over rather than fearing not having everything figured out yet."
+      },
+      {
+        number: 2,
+        title: "Effortless is a myth",
+        takeaway: "Reject the illusion that success comes easily to others. Sustainable mastery in a new career requires intense, deliberate, and often invisible hard work and grit over raw talent."
+      },
+      {
+        number: 3,
+        title: "Earning self-belief",
+        takeaway: "Confidence isn’t given—it must be earned. Build your professional arsenal by facing challenges head-on, expanding your skill set, and trusting your preparation."
+      },
+      {
+        number: 4,
+        title: "It's only a point",
+        takeaway: 'Perfection is impossible. Treat individual failures, rejections, or setbacks as isolated events ("just a point"), let go of negative energy instantly, and fully commit to the next challenge.'
+      },
+      {
+        number: 5,
+        title: "Learning from defeat",
+        takeaway: "Every major career pivot involves setbacks and losses. Accept the sting, process the defeat, and use it as fuel to adapt, grow, and keep competing smarter."
+      },
+      {
+        number: 6,
+        title: "Life beyond the court",
+        takeaway: "Your job or career does not define your entire identity. Cultivate a rich life full of diverse interests, personal connections, and a sense of purpose larger than your profession."
+      },
+      {
+        number: 7,
+        title: "Building a team",
+        takeaway: "Transitioning is never a solo journey. Your success depends on your support network—mentors, peers, family, and collaborators who lift you up and shape your growth."
+      },
+      {
+        number: 8,
+        title: "Concluding advice",
+        takeaway: "Whatever new path you choose, give it your absolute best, go for your shots, play free, try everything, and above all, be kind to one another."
+      }
+    ];
+
+    let currentIndex = 0;
+    let isFlipped = false;
+
+    const flashcardEl = document.getElementById("flashcard");
+    const frontChapterNum = document.getElementById("frontChapterNum");
+    const frontTitle = document.getElementById("frontTitle");
+    const backTakeaway = document.getElementById("backTakeaway");
+    const cardCounter = document.getElementById("cardCounter");
+    const cardStatus = document.getElementById("cardStatus");
+    const progressFill = document.getElementById("progressFill");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    function renderStudyCard() {
+      const card = flashcards[currentIndex];
+      isFlipped = false;
+      flashcardEl.classList.remove("is-flipped");
+
+      setTimeout(() => {
+        frontChapterNum.textContent = `Chapter ${card.number}`;
+        frontTitle.textContent = card.title;
+        backTakeaway.textContent = card.takeaway;
+      }, 120);
+
+      cardCounter.textContent = `Card ${currentIndex + 1} of ${flashcards.length}`;
+      cardStatus.textContent = "Chapter Front";
+      progressFill.style.width = `${((currentIndex + 1) / flashcards.length) * 100}%`;
+
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.disabled = currentIndex === flashcards.length - 1;
+    }
+
+    function flipCard() {
+      isFlipped = !isFlipped;
+      flashcardEl.classList.toggle("is-flipped", isFlipped);
+      cardStatus.textContent = isFlipped ? "Key Takeaway" : "Chapter Front";
+    }
+
+    function nextCard() {
+      if (currentIndex < flashcards.length - 1) {
+        currentIndex++;
+        renderStudyCard();
+      }
+    }
+
+    function prevCard() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        renderStudyCard();
+      }
+    }
+
+    function renderGrid() {
+      const gridView = document.getElementById("gridView");
+      gridView.innerHTML = flashcards.map(card => `
+        <article class="grid-card">
+          <div class="grid-card-header">
+            <div class="grid-num">${card.number}</div>
+            <h3>${card.title}</h3>
+          </div>
+          <div class="key-tag">Key Takeaway</div>
+          <p>${card.takeaway}</p>
+        </article>
+      `).join("");
+    }
+
+    function setMode(mode) {
+      const studyView = document.getElementById("studyView");
+      const gridView = document.getElementById("gridView");
+      const btnStudy = document.getElementById("btnStudy");
+      const btnGrid = document.getElementById("btnGrid");
+      const hintText = document.getElementById("hintText");
+
+      if (mode === "study") {
+        studyView.classList.add("active");
+        gridView.classList.add("hidden");
+        btnStudy.classList.add("active");
+        btnGrid.classList.remove("active");
+        hintText.textContent = "Click or press Space to flip card • Arrow keys to navigate";
+      } else {
+        studyView.classList.remove("active");
+        gridView.classList.remove("hidden");
+        btnGrid.classList.add("active");
+        btnStudy.classList.remove("active");
+        hintText.textContent = "Showing all 8 chapters at a glance";
+      }
+    }
+
+    // Improved robust event listener for Space and Arrow navigation
+    document.addEventListener("keydown", (e) => {
+      const studyView = document.getElementById("studyView");
+      if (!studyView || !studyView.classList.contains("active")) return;
+
+      if (e.key === " " || e.key === "Spacebar" || e.code === "Space" || e.key === "Enter") {
+        if (document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "TEXTAREA") {
+          e.preventDefault();
+          flipCard();
+        }
+      } else if (e.key === "ArrowRight" || e.code === "ArrowRight") {
+        e.preventDefault();
+        nextCard();
+      } else if (e.key === "ArrowLeft" || e.code === "ArrowLeft") {
+        e.preventDefault();
+        prevCard();
+      }
+    });
+
+    renderStudyCard();
+    renderGrid();
+  </script>
+</body>
+</html>
